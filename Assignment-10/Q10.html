@@ -189,62 +189,49 @@
             const todoList = document.getElementById('todoList');
             const emptyState = document.querySelector('.empty-state');
 
-            // Function to add new task
             const addTask = () => {
                 const taskText = taskInput.value.trim();
                 if (!taskText) return;
 
-                // Remove empty state if it exists
                 if (emptyState) {
                     emptyState.remove();
                 }
 
-                // Create new task item
                 const li = document.createElement('li');
                 li.className = 'todo-item';
 
-                // Create checkbox
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.className = 'checkbox';
 
-                // Create task text
                 const span = document.createElement('span');
                 span.className = 'todo-text';
                 span.textContent = taskText;
 
-                // Create remove button
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'remove-btn';
                 removeBtn.textContent = 'Remove';
 
-                // Append elements
                 li.appendChild(checkbox);
                 li.appendChild(span);
                 li.appendChild(removeBtn);
                 todoList.appendChild(li);
 
-                // Clear input
                 taskInput.value = '';
                 taskInput.focus();
 
-                // Add event listeners to new elements
                 setupTaskListeners(li, checkbox, removeBtn);
             };
 
-            // Function to setup listeners for task items
             const setupTaskListeners = (li, checkbox, removeBtn) => {
-                // Checkbox event listener
                 checkbox.addEventListener('change', () => {
                     li.classList.toggle('completed');
                 });
 
-                // Remove button event listener
                 removeBtn.addEventListener('click', () => {
                     li.classList.add('removing');
                     setTimeout(() => {
                         li.remove();
-                        // Show empty state if no tasks left
                         if (todoList.children.length === 0) {
                             todoList.innerHTML = '<li class="empty-state">No tasks yet. Add one above! 📝</li>';
                         }
@@ -252,17 +239,14 @@
                 });
             };
 
-            // Add task button click listener
             addButton.addEventListener('click', addTask);
 
-            // Enter key listener
             taskInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     addTask();
                 }
             });
 
-            // Input animation
             taskInput.addEventListener('focus', () => {
                 taskInput.style.transform = 'scale(1.02)';
             });

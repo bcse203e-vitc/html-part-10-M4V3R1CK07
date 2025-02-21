@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drawing App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1c20 0%, #2d3436 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tool-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f7fafc;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .tool-section:hover {
+            background: #edf2f7;
+            transform: translateY(-2px);
+        }
+
+        label {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        #colorPicker {
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        #brushSize {
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .canvas-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #drawingCanvas {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: crosshair;
+            transition: all 0.3s ease;
+        }
+
+        #drawingCanvas:hover {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        #clearCanvas {
+            background: #fc8181;
+            color: white;
+        }
+
+        #clearCanvas:hover {
+            background: #f56565;
+            transform: translateY(-2px);
+        }
+
+        #clearCanvas:active {
+            transform: translateY(0);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .cursor-preview {
+            position: absolute;
+            pointer-events: none;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Drawing App</h1>
+        <div class="toolbar">
+            <div class="tool-section">
+                <label for="colorPicker">Color:</label>
+                <input type="color" id="colorPicker" value="#000000">
+            </div>
+            <div class="tool-section">
+                <label for="brushSize">Brush Size:</label>
+                <input type="range" id="brushSize" min="1" max="50" value="5">
+                <span id="brushSizeValue">5px</span>
+            </div>
+        </div>
+        <div class="canvas-container">
+            <canvas id="drawingCanvas" width="600" height="400"></canvas>
+            <div class="cursor-preview"></div>
+        </div>
+        <div class="button-group">
+            <button id="clearCanvas">Clear Canvas</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('drawingCanvas');
+            const ctx = canvas.getContext('2d');
+            const colorPicker = document.getElementById('colorPicker');
+            const brushSize = document.getElementById('brushSize');
+            const brushSizeValue = document.getElementById('brushSizeValue');
+            const clearButton = document.getElementById('clearCanvas');
+            const cursorPreview = document.querySelector('.cursor-preview');
+
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.strokeStyle = colorPicker.value;
+                ctx.lineWidth = brushSize.value;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function stopDrawing() {
+                isDrawing = false;
+            }
+
+            function updateCursorPreview(e) {
+                const size = brushSize.value;
+                cursorPreview.style.width = size + 'px';
+                cursorPreview.style.height = size + 'px';
+                cursorPreview.style.borderColor = colorPicker.value;
+                cursorPreview.style.left = (e.offsetX - size/2) + 'px';
+                cursorPreview.style.top = (e.offsetY - size/2) + 'px';
+            }
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', (e) => {
+                draw(e);
+                updateCursorPreview(e);
+            });
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            canvas.addEventListener('mouseover', () => {
+                cursorPreview.style.display = 'block';
+            });
+
+            canvas.addEventListener('mouseout', () => {
+                cursorPreview.style.display = 'none';
+            });
+
+            brushSize.addEventListener('input', () => {
+                brushSizeValue.textContent = `${brushSize.value}px`;
+            });
+
+            clearButton.addEventListener('click', () => {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            });
+
+            function getTouchPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.touches[0].clientX - rect.left,
+                    y: e.touches[0].clientY - rect.top
+                };
+            }
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = getTouchPos(e);
+                startDrawing({ offsetX: touch.x, offsetY: touch.y });
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = getTouchPos(e);
+                draw({ offsetX: touch.x, offsetY: touch.y });
+            });
+
+            canvas.addEventListener('touchend', stopDrawing);
+        });
+    </script>
+</body>
+</html>

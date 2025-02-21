@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country-State Dropdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 50px;
+        }
+        select {
+            width: 50%;
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease-in-out;
+        }
+        select:focus {
+            border-color: #007BFF;
+        }
+        .dropdown-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Country-State Selection</h2>
+    <div class="dropdown-container">
+        <select id="country" onchange="updateStates()">
+            <option value="">Select a Country</option>
+            <option value="USA">USA</option>
+            <option value="India">India</option>
+            <option value="UK">UK</option>
+        </select>
+        <select id="state">
+            <option value="">Select a State</option>
+        </select>
+    </div>
+    
+    <script>
+        const states = {
+            "USA": ["California", "Texas", "New York"],
+            "India": ["Maharashtra", "Karnataka", "Delhi"],
+            "UK": ["London", "Manchester", "Birmingham"]
+        };
+
+        function updateStates() {
+            const countrySelect = document.getElementById("country");
+            const stateSelect = document.getElementById("state");
+            const selectedCountry = countrySelect.value;
+            
+            stateSelect.innerHTML = "<option value=''>Select a State</option>";
+            
+            if (selectedCountry && states[selectedCountry]) {
+                states[selectedCountry].forEach(state => {
+                    let option = document.createElement("option");
+                    option.value = state;
+                    option.textContent = state;
+                    stateSelect.appendChild(option);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

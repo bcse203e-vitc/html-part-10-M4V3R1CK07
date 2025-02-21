@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -213,7 +214,6 @@
             const toppings = Array.from(document.querySelectorAll('input[name="toppings"]:checked'))
                 .map(topping => topping.value);
 
-            // Calculate price
             let basePrice;
             switch(size) {
                 case 'Small': basePrice = 10.99; break;
@@ -224,7 +224,6 @@
             const toppingsPrice = toppings.length * 1.50;
             const totalPrice = basePrice + toppingsPrice;
 
-            // Create summary
             const summaryText = `
                 <p><strong>Size:</strong> ${size}</p>
                 <p><strong>Toppings:</strong> ${toppings.length ? toppings.join(', ') : 'No extra toppings'}</p>
@@ -233,15 +232,11 @@
             document.getElementById('summaryText').innerHTML = summaryText;
             document.getElementById('totalPrice').textContent = `Total: $${totalPrice.toFixed(2)}`;
 
-            // Show summary with animation
             const summary = document.getElementById('orderSummary');
             summary.classList.add('show');
-
-            // Scroll to summary
             summary.scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Add animation to radio and checkbox labels
         const labels = document.querySelectorAll('.radio-label, .checkbox-label');
         labels.forEach(label => {
             label.addEventListener('click', function() {
@@ -254,3 +249,5 @@
     </script>
 </body>
 </html>
+
+
