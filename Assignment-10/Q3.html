@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pizza Order Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        .size-options, .toppings-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .radio-label, .checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-label:hover, .checkbox-label:hover {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        input[type="radio"]:checked + .radio-label,
+        input[type="checkbox"]:checked + .checkbox-label {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+
+        .submit-btn:hover {
+            background: #ff5252;
+            transform: scale(1.02);
+        }
+
+        .order-summary {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .order-summary.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .price {
+            font-size: 24px;
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🍕 Build Your Pizza</h2>
+        <form id="pizzaForm">
+            <div class="section">
+                <div class="section-title">Choose Size</div>
+                <div class="size-options">
+                    <div>
+                        <input type="radio" id="small" name="size" value="Small" hidden required>
+                        <label class="radio-label" for="small">
+                            Small - $10.99
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="medium" name="size" value="Medium" hidden>
+                        <label class="radio-label" for="medium">
+                            Medium - $14.99
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="large" name="size" value="Large" hidden>
+                        <label class="radio-label" for="large">
+                            Large - $18.99
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Select Toppings ($1.50 each)</div>
+                <div class="toppings-options">
+                    <div>
+                        <input type="checkbox" id="cheese" name="toppings" value="Cheese" hidden>
+                        <label class="checkbox-label" for="cheese">
+                            Extra Cheese
+                        </label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="pepperoni" name="toppings" value="Pepperoni" hidden>
+                        <label class="checkbox-label" for="pepperoni">
+                            Pepperoni
+                        </label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="mushrooms" name="toppings" value="Mushrooms" hidden>
+                        <label class="checkbox-label" for="mushrooms">
+                            Mushrooms
+                        </label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="olives" name="toppings" value="Olives" hidden>
+                        <label class="checkbox-label" for="olives">
+                            Olives
+                        </label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="onions" name="toppings" value="Onions" hidden>
+                        <label class="checkbox-label" for="onions">
+                            Onions
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Place Order</button>
+
+            <div class="order-summary" id="orderSummary">
+                <h3>Your Order Summary</h3>
+                <div id="summaryText"></div>
+                <div class="price" id="totalPrice"></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('pizzaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const size = document.querySelector('input[name="size"]:checked').value;
+            const toppings = Array.from(document.querySelectorAll('input[name="toppings"]:checked'))
+                .map(topping => topping.value);
+
+            // Calculate price
+            let basePrice;
+            switch(size) {
+                case 'Small': basePrice = 10.99; break;
+                case 'Medium': basePrice = 14.99; break;
+                case 'Large': basePrice = 18.99; break;
+            }
+
+            const toppingsPrice = toppings.length * 1.50;
+            const totalPrice = basePrice + toppingsPrice;
+
+            // Create summary
+            const summaryText = `
+                <p><strong>Size:</strong> ${size}</p>
+                <p><strong>Toppings:</strong> ${toppings.length ? toppings.join(', ') : 'No extra toppings'}</p>
+            `;
+
+            document.getElementById('summaryText').innerHTML = summaryText;
+            document.getElementById('totalPrice').textContent = `Total: $${totalPrice.toFixed(2)}`;
+
+            // Show summary with animation
+            const summary = document.getElementById('orderSummary');
+            summary.classList.add('show');
+
+            // Scroll to summary
+            summary.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Add animation to radio and checkbox labels
+        const labels = document.querySelectorAll('.radio-label, .checkbox-label');
+        labels.forEach(label => {
+            label.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
